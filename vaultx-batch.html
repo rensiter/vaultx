@@ -246,26 +246,13 @@ function getBatchIcon(name){
 
 /* ── STATIC BATCH DATA (fallback) ── */
 const BATCHES = {
-  'JEE Mains':{label:'JEE MAINS',subjects:[
-    {badge:'PHY',name:'Physics',teacher:'HC Verma Sir',chapters:15,lectures:85,done:20},
-    {badge:'CHE',name:'Chemistry',teacher:'VK Jaiswal Sir',chapters:12,lectures:72,done:15},
-    {badge:'MAT',name:'Mathematics',teacher:'ML Khanna Sir',chapters:18,lectures:95,done:10},
-  ]},
-  'NEET':{label:'NEET',subjects:[
-    {badge:'BIO',name:'Biology',teacher:'NCERT Expert',chapters:16,lectures:90,done:30},
-    {badge:'PHY',name:'Physics',teacher:'DC Pandey Sir',chapters:14,lectures:75,done:12},
-    {badge:'CHE',name:'Chemistry',teacher:'Morrison Boyd',chapters:13,lectures:68,done:8},
-  ]},
-  'Class 11th':{label:'CLASS 11TH',subjects:[
-    {badge:'PHY',name:'Physics',teacher:'HC Verma Sir',chapters:10,lectures:55,done:25},
-    {badge:'CHE',name:'Chemistry',teacher:'NCERT Sir',chapters:9,lectures:48,done:18},
-    {badge:'MAT',name:'Mathematics',teacher:'RD Sharma Sir',chapters:12,lectures:62,done:5},
-  ]},
-  'DSA':{label:'DSA',subjects:[
-    {badge:'ARR',name:'Arrays & Strings',teacher:'Striver Sir',chapters:8,lectures:42,done:35},
-    {badge:'TRE',name:'Trees & Graphs',teacher:'Aditya Verma Sir',chapters:10,lectures:58,done:0},
-    {badge:'DP',name:'Dynamic Programming',teacher:'Striver Sir',chapters:12,lectures:65,done:0},
-  ]},
+  'AK CLASS 11TH':{
+    label:'AK CLASS 11TH',
+    searchPlaceholder:'Search in AK CLASS 11TH...',
+    subjects:[
+      {badge:'ORG',name:'ORGANIC ( SKM SIR )',teacher:'Coming Soon',chapters:1,lectures:1,done:0,color:'#6c63ff',color2:'#a78bfa',badgeBg:'rgba(108,99,255,0.12)'}
+    ]
+  }
 };
 
 function renderSubjects(subjects){
