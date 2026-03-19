@@ -6,12 +6,21 @@
           "teacher": "Coming Soon",
           "chapters": {
             "ISOMERISM": {
-              "lectures": []
+              "lectures": [
+                {
+                  "idx": 0,
+                  "title": "Lecture 01",
+                  "msg_id": 14
+                }
+              ]
             }
           }
         }
       }
     }
   },
-  "index_msgs": {}
+  "index_msgs": {},
+  "lecture_ids": {
+    "ISOMERISM__0": 14
+  }
 }
