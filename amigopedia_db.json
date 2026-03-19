@@ -24,7 +24,13 @@
           "teacher": "SKM SIR",
           "chapters": {
             "STREOIDOMER": {
-              "lectures": []
+              "lectures": [
+                {
+                  "idx": 0,
+                  "title": "Lecture 01",
+                  "msg_id": 26
+                }
+              ]
             }
           }
         }
@@ -33,6 +39,7 @@
   },
   "index_msgs": {},
   "lecture_ids": {
-    "ISOMERISM__0": 14
+    "ISOMERISM__0": 14,
+    "STREOIDOMER__0": 26
   }
 }
