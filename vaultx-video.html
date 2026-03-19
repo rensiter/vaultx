@@ -934,7 +934,7 @@ async function wakeRender() {
   renderWaking = true;
   renderReady  = false;
 
-  updateSrvIndicator(true, `⚡ Railway · Render jagao...`);
+  updateSrvIndicator(true, '⚡ Railway · Render jagao...');
 
   // Sabhi Render servers ko simultaneously wake karo
   const wakePromises = RENDER_SERVERS.map(async url => {
@@ -988,7 +988,7 @@ async function shiftToRender(renderUrl) {
   const wasPaused   = v.paused;
 
   // New source set karo — Render URL
-  const newSrc = `${renderUrl}/api/stream/${currentMsgId}`;
+  const newSrc = renderUrl + '/api/stream/' + currentMsgId;
 
   // Sirf shift karo agar actually alag server hai
   if (v.src === newSrc) return;
@@ -1003,7 +1003,7 @@ async function shiftToRender(renderUrl) {
 
   // UI update
   const idx = RENDER_SERVERS.indexOf(renderUrl);
-  updateSrvIndicator(true, `🔋 Render R${idx+1} · Live`);
+  updateSrvIndicator(true, '🔋 Render R' + (idx+1) + ' · Live');
   renderSrvList();
 
   // Toast dikhao (sirf admin ke liye debug)
@@ -1048,7 +1048,7 @@ async function checkAllServers() {
     activeServer = onlineRailway[0].url;
     localStorage.setItem('vx_active_server', activeServer);
     const idx = RAILWAY_SERVERS.indexOf(activeServer);
-    updateSrvIndicator(true, `⚡ Railway R${idx+1} · ${onlineRailway[0].ping}ms`);
+    updateSrvIndicator(true, '⚡ Railway R' + (idx+1) + ' · ' + onlineRailway[0].ping + 'ms');
   } else {
     // Railway nahi mili — Render try karo
     activeServer = RENDER_SERVERS[0] || '';
@@ -1088,7 +1088,7 @@ function renderSrvList() {
     const ping     = stat.ping;
     const online   = stat.online;
     const typeEmoji = type === 'railway' ? '⚡' : '🔋';
-    const typeName  = type === 'railway' ? `Railway R${idx+1}` : `Render R${idx+1}`;
+    const typeName  = type === 'railway' ? ('Railway R'+(idx+1)) : ('Render R'+(idx+1));
 
     let dotColor = '#44445a', pingText = 'Checking...', pingClass = '';
     if (stat.lastCheck) {
@@ -1099,18 +1099,22 @@ function renderSrvList() {
       else               { dotColor='#ff6584'; pingText=ping+'ms';         pingClass='slow'; }
     }
 
-    return `<div class="srv-item ${isActive?'active-server':''}" onclick="useServer('${url}')">
-      <div class="srv-item-dot" style="background:${dotColor}"></div>
-      <div class="srv-item-info">
-        <div class="srv-item-name">${typeEmoji} ${typeName}</div>
-        <div class="srv-item-ping ${pingClass}">${pingText}${isActive?' · Using now':''}</div>
-      </div>
-      ${isActive
-        ? '<span class="srv-item-use">✓ Active</span>'
-        : '<span class="srv-item-use" style="background:transparent;color:var(--text-muted)">Use</span>'}
-      <button onclick="removeServer(event,'${url}','${type}')"
-        style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;padding:2px 4px;border-radius:4px;">✕</button>
-    </div>`;
+    const activeClass = isActive ? 'active-server' : '';
+    const activeBadge = isActive
+      ? '<span class="srv-item-use">✓ Active</span>'
+      : '<span class="srv-item-use" style="background:transparent;color:var(--text-muted)">Use</span>';
+    const pingFull = pingText + (isActive ? ' · Using now' : '');
+
+    return '<div class="srv-item ' + activeClass + '" onclick="useServer('' + url + '')">' +
+      '<div class="srv-item-dot" style="background:' + dotColor + '"></div>' +
+      '<div class="srv-item-info">' +
+        '<div class="srv-item-name">' + typeEmoji + ' ' + typeName + '</div>' +
+        '<div class="srv-item-ping ' + pingClass + '">' + pingFull + '</div>' +
+      '</div>' +
+      activeBadge +
+      '<button onclick="removeServer(event,'' + url + '','' + type + '')" ' +
+        'style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;padding:2px 4px;border-radius:4px;">✕</button>' +
+    '</div>';
   };
 
   let html = '';
@@ -1128,7 +1132,7 @@ function renderSrvList() {
                    : RENDER_SERVERS.includes(activeServer)  ? '🔋 Render'
                    : 'None';
   document.getElementById('srvFooter').textContent = activeServer
-    ? `${activeType} · Streaming`
+    ? (activeType + ' · Streaming')
     : 'No active server';
 }
 
@@ -1141,12 +1145,12 @@ function useServer(url) {
   activeServer = url;
   localStorage.setItem('vx_active_server', url);
   renderSrvList();
-  updateSrvIndicator(true, `S${SERVERS.indexOf(url)+1} · Manual`);
+  updateSrvIndicator(true, 'S' + (SERVERS.indexOf(url)+1) + ' · Manual');
   const v = document.getElementById('mainVideo');
   const ids = JSON.parse(localStorage.getItem('vx_lecture_ids')||'{}');
-  const msgId = ids[`${currentChapter}__${currentIdx}`];
+  const msgId = ids[currentChapter + '__' + currentIdx];
   if (msgId) {
-    v.src = `${activeServer}/api/stream/${msgId}`;
+    v.src = activeServer + '/api/stream/' + msgId;
     document.getElementById('vpPh').style.display='none';
     v.play().catch(()=>{});
   }
@@ -1180,7 +1184,7 @@ function promptAddServer() {
     : 'https://vaultx.onrender.com';
 
   const url = prompt(
-    `${type === 'railway' ? '⚡ Railway' : '🔋 Render'} URL paste karo:\n\ne.g. ${placeholder}`
+    ((type==='railway'?'⚡ Railway':'🔋 Render') + ' URL paste karo:\n\ne.g. ' + placeholder)
   );
   if (!url || !url.startsWith('http')) return;
   const clean = url.trim().replace(/\/+$/, '');
@@ -1318,7 +1322,7 @@ function requestTelegramFallback() {
   }
 
   const ids = JSON.parse(localStorage.getItem('vx_lecture_ids') || '{}');
-  const msgId = ids[`${currentChapter}__${currentIdx}`];
+  const msgId = ids[currentChapter + '__' + currentIdx];
   if (msgId) {
     triggerTelegramFallback(msgId, lecTitle(), currentChapter, currentBatch);
   }
@@ -1343,11 +1347,11 @@ setInterval(async () => {
         if (currentMsgId) {
           const v = document.getElementById('mainVideo');
           const t = v.currentTime;
-          v.src = `${fallback}/api/stream/${currentMsgId}`;
+          v.src = fallback + '/api/stream/' + currentMsgId;
           v.currentTime = t;
           v.play().catch(()=>{});
         }
-        updateSrvIndicator(true, `⚡ Switched to Railway`);
+        updateSrvIndicator(true, '⚡ Switched to Railway');
       }
     } else {
       checkAllServers();
@@ -1365,13 +1369,13 @@ setInterval(async () => {
 
 const serverUrl = '';  // Legacy — ab activeServer use hota hai
 let allLectures = JSON.parse(localStorage.getItem('vx_lec_list') || '[]');
-if (!allLectures.length) allLectures = Array.from({length:12},(_,i)=>`Lecture ${i+1}`);
+if (!allLectures.length) allLectures = Array.from({length:12},(_,i)=>'Lecture ' + (i+1));
 let currentIdx = lecIdx;
 let progress = JSON.parse(localStorage.getItem('vx_lec_progress') || '{}');
 let bookmarks = JSON.parse(localStorage.getItem('vx_bookmarks') || '{}');
 let watchHistory = JSON.parse(localStorage.getItem('vx_history') || '[]');
 let saveTimer = null;
-const lecKey = () => `${currentBatch}__${currentSubject}__${currentChapter}__${currentIdx}`;
+const lecKey = () => currentBatch + '__' + currentSubject + '__' + currentChapter + '__' + currentIdx;
 const lecTitle = () => urlp.get('title') || allLectures[currentIdx] || 'Lecture';
 
 // Theme
@@ -1381,16 +1385,16 @@ document.documentElement.setAttribute('data-theme', savedTheme);
 /* ── INIT ── */
 function init() {
   const title = lecTitle();
-  document.title = `VAULTX — ${title}`;
+  document.title = 'VAULTX — ' + title;
   document.getElementById('lecTitle').textContent = title;
   document.getElementById('lecSubject').textContent = currentSubject;
   document.getElementById('lecChapter').textContent = currentChapter;
   document.getElementById('topbarSubject').textContent = currentSubject.toUpperCase();
-  document.getElementById('welcomeMsg').textContent = `Namaste! 🙏 "${currentChapter}" ka doubt poochho!`;
+  document.getElementById('welcomeMsg').textContent = 'Namaste! 🙏 "' + currentChapter + '" ka doubt poochho!';
   document.getElementById('miniTitle').textContent = title;
   const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
   document.getElementById('quoteText').textContent = q.q;
-  document.getElementById('quoteAuthor').textContent = `— ${q.a}`;
+  document.getElementById('quoteAuthor').textContent = '— ' + q.a;
   updateMarkDone();
   renderInlineAttach();
   renderPanelAttach();
@@ -1412,7 +1416,7 @@ function init() {
   document.getElementById('mainVideo').addEventListener('error', ()=>{
     if (fallbackTriggered) return;
     const ids = JSON.parse(localStorage.getItem('vx_lecture_ids')||'{}');
-    const msgId = ids[`${currentChapter}__${currentIdx}`];
+    const msgId = ids[currentChapter + '__' + currentIdx];
     if (msgId) {
       showFallbackBanner(
         '⚠️ Stream Error!',
@@ -1472,7 +1476,7 @@ async function loadVideo() {
 
   // ── Step 1: localStorage mein check karo ──
   let ids = JSON.parse(localStorage.getItem('vx_lecture_ids') || '{}');
-  let msgId = ids[`${currentChapter}__${currentIdx}`];
+  let msgId = ids[currentChapter + '__' + currentIdx];
 
   // ── Step 2: Agar nahi mila toh /api/db se fetch karo ──
   if (!msgId) {
@@ -1488,7 +1492,7 @@ async function loadVideo() {
           // localStorage update karo future ke liye
           localStorage.setItem('vx_lecture_ids', JSON.stringify(dbIds));
           ids = dbIds;
-          msgId = ids[`${currentChapter}__${currentIdx}`];
+          msgId = ids[currentChapter + '__' + currentIdx];
         }
 
         // Agar phir bhi nahi mila — DB structure se dhundo
@@ -1504,7 +1508,7 @@ async function loadVideo() {
                 if (lec && lec.msg_id) {
                   msgId = lec.msg_id;
                   // Save karo
-                  ids[`${currentChapter}__${currentIdx}`] = msgId;
+                  ids[currentChapter + '__' + currentIdx] = msgId;
                   localStorage.setItem('vx_lecture_ids', JSON.stringify(ids));
                   break;
                 }
@@ -1539,7 +1543,7 @@ async function loadVideo() {
   }
 
   if (activeServer) {
-    v.src = `${activeServer}/api/stream/${msgId}`;
+    v.src = activeServer + '/api/stream/' + msgId;
     document.getElementById('vpPh').style.display = 'none';
     v.play().catch(() => {});
 
@@ -1563,7 +1567,7 @@ async function loadVideo() {
     const wait = setInterval(() => {
       if (activeServer) {
         clearInterval(wait);
-        v.src = `${activeServer}/api/stream/${msgId}`;
+        v.src = activeServer + '/api/stream/' + msgId;
         document.getElementById('vpPh').style.display = 'none';
         v.play().catch(() => {});
         if (RENDER_SERVERS.length && !renderReady) {
@@ -1619,13 +1623,13 @@ function handleSwipeMove(e){
     // Right side = volume
     v.volume=Math.max(0,Math.min(1,v.volume+dy*0.01));
     document.getElementById('volSlider').value=v.volume;
-    showSwipeInd(`🔊 ${Math.round(v.volume*100)}%`);
+    showSwipeInd('🔊 ' + Math.round(v.volume*100) + '%');
   } else {
     // Left side = brightness (CSS filter)
     let br=parseFloat(document.getElementById('mainVideo').style.filter?.match(/brightness\(([^)]+)\)/)?.[1]||1);
     br=Math.max(0.2,Math.min(2,br+dy*0.01));
-    document.getElementById('mainVideo').style.filter=`brightness(${br})`;
-    showSwipeInd(`☀️ ${Math.round(br*100)}%`);
+    document.getElementById('mainVideo').style.filter='brightness(' + br + ')';
+    showSwipeInd('☀️ ' + Math.round(br*100) + '%');
   }
 }
 function showSwipeInd(txt){
@@ -1702,7 +1706,7 @@ function checkResume(){
   const hist=JSON.parse(localStorage.getItem('vx_history')||'[]');
   const entry=hist.find(h=>h.key===lecKey());
   if(entry&&entry.time>10&&entry.pct<90){
-    document.getElementById('resumeText').textContent=`⏱ Pichli baar ${fmt(entry.time)} pe chore tha`;
+    document.getElementById('resumeText').textContent='⏱ Pichli baar ' + fmt(entry.time) + ' pe chore tha';
     document.getElementById('resumeBanner').classList.add('show');
     document.getElementById('resumeBanner')._time=entry.time;
   }
@@ -1736,7 +1740,7 @@ function startAutoNext(){
   if(currentIdx >= allLectures.length - 1) return; // Last lecture
 
   autoNextCount = 5;
-  const nextTitle = allLectures[currentIdx + 1] || `Lecture ${currentIdx + 2}`;
+  const nextTitle = allLectures[currentIdx + 1] || 'Lecture ' + (currentIdx + 2);
   document.getElementById('autoNextTitle').textContent = nextTitle;
   document.getElementById('autoNextNum').textContent = autoNextCount;
 
@@ -1777,7 +1781,7 @@ function checkChapterCompletion(){
   // Count completed lectures
   let completedCount = 0;
   for(let i = 0; i < totalLectures; i++){
-    const key = `${currentBatch}__${currentSubject}__${currentChapter}__${i}`;
+    const key = currentBatch + '__' + currentSubject + '__' + currentChapter + '__' + i;
     if(progress[key]) completedCount++;
   }
 
@@ -1786,7 +1790,7 @@ function checkChapterCompletion(){
   // Chapter complete?
   if(completedCount === totalLectures){
     // Check agar already badge diya hai
-    const badgeKey = `vx_badge_${currentBatch}__${currentSubject}__${currentChapter}`;
+    const badgeKey = 'vx_badge_' + currentBatch + '__' + currentSubject + '__' + currentChapter;
     if(localStorage.getItem(badgeKey)) return; // Already shown
     localStorage.setItem(badgeKey, 'true');
 
@@ -1798,7 +1802,7 @@ function checkChapterCompletion(){
 function showChapterBadge(){
   document.getElementById('badgeChapter').textContent = currentChapter;
   document.getElementById('badgeSub').textContent =
-    `Waah! Tumne "${currentChapter}" ke saare ${allLectures.length} lectures dekh liye! 🎉`;
+    'Waah! Tumne "' + currentChapter + '" ke saare ' + allLectures.length + ' lectures dekh liye! 🎉';
 
   // Confetti
   spawnConfetti();
@@ -1812,15 +1816,7 @@ function spawnConfetti(){
   for(let i = 0; i < 40; i++){
     const p = document.createElement('div');
     p.className = 'confetti-piece';
-    p.style.cssText = `
-      left:${Math.random()*100}%;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      animation-delay:${Math.random()*0.8}s;
-      animation-duration:${1.5 + Math.random()}s;
-      width:${6 + Math.random()*6}px;
-      height:${6 + Math.random()*6}px;
-      border-radius:${Math.random()>0.5?'50%':'2px'};
-    `;
+    p.style.cssText = 'left:' + (Math.random()*100) + '%;background:' + colors[Math.floor(Math.random()*colors.length)] + ';animation-delay:' + (Math.random()*0.8) + 's;animation-duration:' + (1.5 + Math.random()) + 's;width:' + (6 + Math.random()*6) + 'px;height:' + (6 + Math.random()*6) + 'px;border-radius:' + (Math.random()>0.5?'50%':'2px') + ';';
     wrap.appendChild(p);
   }
 }
@@ -1850,12 +1846,46 @@ function showWeakTopicFinder(){
   const topics = analyzeWeakTopics(subjectData);
 
   if(topics.length === 0){
-    body.innerHTML = `
-      <div style="text-align:center;padding:2rem;color:var(--text-muted);">
-        <div style="font-size:2rem;margin-bottom:.5rem;">📊</div>
-        <div style="font-size:.85rem;font-weight:700;">Abhi koi quiz data nahi hai!</div>
-        <div style="font-size:.75rem;margin-top:.3rem;">Pehle kuch quizzes complete karo.</div>
-      </div>`;
+    let bodyHtml = '<div class="weak-summary">';
+  bodyHtml += '<div class="weak-summary-title">Overall Performance — ' + currentSubject + '</div>';
+  bodyHtml += '<div class="weak-score-row">';
+  bodyHtml += '<div class="weak-score-label">Total Score</div>';
+  bodyHtml += '<div class="weak-score-bar"><div class="weak-score-fill" style="width:' + overallPct + '%;background:' + scoreColor + '"></div></div>';
+  bodyHtml += '<div class="weak-score-pct" style="color:' + scoreColor + '">' + overallPct + '%</div>';
+  bodyHtml += '</div>';
+  bodyHtml += '<div style="font-size:.72rem;color:var(--text-muted);margin-top:.3rem;">' + totalCorrect + '/' + totalQ + ' questions correct · ' + topics.length + ' chapters attempted</div>';
+  bodyHtml += '</div>';
+
+  if (weak.length > 0) {
+    bodyHtml += '<div class="weak-section-title">🔴 Weak Topics — Improve Karo</div>';
+    weak.forEach(function(t) {
+      bodyHtml += '<div class="weak-topic-item"><div class="weak-topic-icon">⚠️</div><div class="weak-topic-info"><div class="weak-topic-name">' + t.topic + '</div><div class="weak-topic-desc">' + t.correct + '/' + t.total + ' correct · ' + t.pct + '% score</div></div><div class="weak-topic-badge weak">Weak</div></div>';
+    });
+  }
+  if (ok.length > 0) {
+    bodyHtml += '<div class="weak-section-title">🟡 Average Topics — Thoda aur karo</div>';
+    ok.forEach(function(t) {
+      bodyHtml += '<div class="weak-topic-item"><div class="weak-topic-icon">📈</div><div class="weak-topic-info"><div class="weak-topic-name">' + t.topic + '</div><div class="weak-topic-desc">' + t.correct + '/' + t.total + ' correct · ' + t.pct + '% score</div></div><div class="weak-topic-badge ok">Average</div></div>';
+    });
+  }
+  if (strong.length > 0) {
+    bodyHtml += '<div class="weak-section-title">🟢 Strong Topics — Keep it up!</div>';
+    strong.forEach(function(t) {
+      bodyHtml += '<div class="weak-topic-item"><div class="weak-topic-icon">💪</div><div class="weak-topic-info"><div class="weak-topic-name">' + t.topic + '</div><div class="weak-topic-desc">' + t.correct + '/' + t.total + ' correct · ' + t.pct + '% score</div></div><div class="weak-topic-badge strong">Strong</div></div>';
+    });
+  }
+  if (weak.length > 0) {
+    bodyHtml += '<div class="weak-recommend"><div class="weak-recommend-title">💡 AI Recommendation</div>';
+    weak.slice(0,3).forEach(function(t) {
+      bodyHtml += '<div class="weak-recommend-item">' + t.topic + ' ko dobara dekho — lectures rewatch karo</div>';
+    });
+    bodyHtml += '<div class="weak-recommend-item">Daily 1 weak topic practice karo</div>';
+    bodyHtml += '</div>';
+  } else {
+    bodyHtml += '<div class="weak-recommend"><div class="weak-recommend-title">🎉 Excellent Performance!</div><div class="weak-recommend-item">Sab topics strong hain — next chapter pe jao!</div><div class="weak-recommend-item">Mock test do apni preparation test karne ke liye</div></div>';
+  }
+  body.innerHTML = bodyHtml;
+
     document.getElementById('weakOverlay').classList.add('show');
     return;
   }
@@ -1871,71 +1901,6 @@ function showWeakTopicFinder(){
 
   const scoreColor = overallPct >= 80 ? 'var(--accent3)' : overallPct >= 50 ? 'var(--accent4)' : 'var(--accent2)';
 
-  body.innerHTML = `
-    <div class="weak-summary">
-      <div class="weak-summary-title">Overall Performance — ${currentSubject}</div>
-      <div class="weak-score-row">
-        <div class="weak-score-label">Total Score</div>
-        <div class="weak-score-bar">
-          <div class="weak-score-fill" style="width:${overallPct}%;background:${scoreColor}"></div>
-        </div>
-        <div class="weak-score-pct" style="color:${scoreColor}">${overallPct}%</div>
-      </div>
-      <div style="font-size:.72rem;color:var(--text-muted);margin-top:.3rem;">
-        ${totalCorrect}/${totalQ} questions correct · ${topics.length} chapters attempted
-      </div>
-    </div>
-
-    ${weak.length > 0 ? `
-    <div class="weak-section-title">🔴 Weak Topics — Improve Karo</div>
-    ${weak.map(t=>`
-      <div class="weak-topic-item">
-        <div class="weak-topic-icon">⚠️</div>
-        <div class="weak-topic-info">
-          <div class="weak-topic-name">${t.topic}</div>
-          <div class="weak-topic-desc">${t.correct}/${t.total} correct · ${t.pct}% score</div>
-        </div>
-        <div class="weak-topic-badge weak">Weak</div>
-      </div>`).join('')}` : ''}
-
-    ${ok.length > 0 ? `
-    <div class="weak-section-title">🟡 Average Topics — Thoda aur karo</div>
-    ${ok.map(t=>`
-      <div class="weak-topic-item">
-        <div class="weak-topic-icon">📈</div>
-        <div class="weak-topic-info">
-          <div class="weak-topic-name">${t.topic}</div>
-          <div class="weak-topic-desc">${t.correct}/${t.total} correct · ${t.pct}% score</div>
-        </div>
-        <div class="weak-topic-badge ok">Average</div>
-      </div>`).join('')}` : ''}
-
-    ${strong.length > 0 ? `
-    <div class="weak-section-title">🟢 Strong Topics — Keep it up!</div>
-    ${strong.map(t=>`
-      <div class="weak-topic-item">
-        <div class="weak-topic-icon">💪</div>
-        <div class="weak-topic-info">
-          <div class="weak-topic-name">${t.topic}</div>
-          <div class="weak-topic-desc">${t.correct}/${t.total} correct · ${t.pct}% score</div>
-        </div>
-        <div class="weak-topic-badge strong">Strong</div>
-      </div>`).join('')}` : ''}
-
-    ${weak.length > 0 ? `
-    <div class="weak-recommend">
-      <div class="weak-recommend-title">💡 AI Recommendation</div>
-      ${weak.slice(0,3).map(t=>`
-        <div class="weak-recommend-item">${t.topic} ko dobara dekho — lectures rewatch karo</div>
-      `).join('')}
-      ${weak.length > 0 ? '<div class="weak-recommend-item">Daily 1 weak topic practice karo</div>' : ''}
-    </div>` : `
-    <div class="weak-recommend">
-      <div class="weak-recommend-title">🎉 Excellent Performance!</div>
-      <div class="weak-recommend-item">Sab topics strong hain — next chapter pe jao!</div>
-      <div class="weak-recommend-item">Mock test do apni preparation test karne ke liye</div>
-    </div>`}
-  `;
 
   document.getElementById('weakOverlay').classList.add('show');
 }
@@ -1982,14 +1947,14 @@ function addBookmarkAtTime(){
   const v=document.getElementById('mainVideo');
   const t=v.currentTime;
   if(!t)return;
-  const note=prompt(`Bookmark at ${fmt(t)}\nNote add karo (optional):`,'')||'📌 Bookmark';
+  const note=prompt('Bookmark at ' + fmt(t) + '\nNote add karo (optional):','')||'📌 Bookmark';
   const k=lecKey();
   if(!bookmarks[k])bookmarks[k]=[];
   bookmarks[k].push({time:t,note,id:Date.now()});
   localStorage.setItem('vx_bookmarks',JSON.stringify(bookmarks));
   updateBmBadge();
   renderBmMarkers();
-  showNotif('🔖',`Bookmark added at ${fmt(t)}`);
+  showNotif('🔖','Bookmark added at ' + fmt(t));
   document.getElementById('bmVidBtn').classList.add('marked');
   setTimeout(()=>document.getElementById('bmVidBtn').classList.remove('marked'),1500);
 }
@@ -2028,7 +1993,7 @@ function closeSidePanel(){document.getElementById('sideOverlay').classList.remov
 function switchSpTab(tab){
   currentSpTab=tab;
   document.querySelectorAll('.sp-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById(`spTab-${tab}`).classList.add('active');
+  document.getElementById('spTab-' + tab).classList.add('active');
   if(tab==='bm')renderBmList();else renderHistList();
 }
 function renderBmList(){
@@ -2036,7 +2001,7 @@ function renderBmList(){
   const body=document.getElementById('spBody');
   if(!bms.length){body.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.8rem;font-weight:700;">Koi bookmark nahi hai<br>Video mein 🔖 tap karo</div>';return;}
   body.innerHTML='<div style="margin-bottom:.8rem;"><div class="bm-add-row"><input class="bm-input" id="bmNoteInput" placeholder="Note likho..."/><button class="bm-add-btn" onclick="addBmFromPanel()">+ Add</button></div></div>'+
-  bms.map(bm=>`<div class="bm-item" onclick="seekToBm(${bm.time})"><div class="bm-time">${fmt(bm.time)}</div><div class="bm-note">${bm.note}</div><button class="bm-del" onclick="delBm(${bm.id},event)">🗑</button></div>`).join('');
+  bms.map(function(bm){return '<div class="bm-item" onclick="seekToBm(' + bm.time + ')"><div class="bm-time">' + fmt(bm.time) + '</div><div class="bm-note">' + bm.note + '</div><button class="bm-del" onclick="delBm(' + bm.id + ',event)">🗑</button></div>';}).join('');
 }
 function addBmFromPanel(){const v=document.getElementById('mainVideo');const inp=document.getElementById('bmNoteInput');const note=inp.value.trim()||'📌 Bookmark';const k=lecKey();if(!bookmarks[k])bookmarks[k]=[];bookmarks[k].push({time:v.currentTime,note,id:Date.now()});localStorage.setItem('vx_bookmarks',JSON.stringify(bookmarks));inp.value='';updateBmBadge();renderBmList();}
 function seekToBm(t){document.getElementById('mainVideo').currentTime=t;closeSidePanel();}
@@ -2045,15 +2010,7 @@ function renderHistList(){
   const hist=JSON.parse(localStorage.getItem('vx_history')||'[]');
   const body=document.getElementById('spBody');
   if(!hist.length){body.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.8rem;font-weight:700;">Watch history empty hai</div>';return;}
-  body.innerHTML=hist.slice(0,20).map(h=>`
-    <div class="hist-item">
-      <div class="hist-thumb">▶</div>
-      <div class="hist-info">
-        <div class="hist-title">${h.title}</div>
-        <div class="hist-meta">${h.subject} · ${fmt(h.time)} / ${fmt(h.duration)}</div>
-        <div class="hist-prog"><div class="hist-prog-fill" style="width:${h.pct}%"></div></div>
-      </div>
-    </div>`).join('');
+  body.innerHTML=hist.slice(0,20).map(function(h){return '<div class="hist-item"><div class="hist-thumb">▶</div><div class="hist-info"><div class="hist-title">'+h.title+'</div><div class="hist-meta">'+h.subject+' · '+fmt(h.time)+' / '+fmt(h.duration)+'</div><div class="hist-prog"><div class="hist-prog-fill" style="width:'+h.pct+'%"></div></div></div></div>';}).join('');
 }
 
 /* ══ MARK DONE ══ */
@@ -2075,7 +2032,7 @@ function renderQuizQ(){
   document.getElementById('quizExplain').className='quiz-explain';
   document.getElementById('quizExplain').textContent=q.exp;
   document.getElementById('quizNext').style.display='none';
-  document.getElementById('quizOpts').innerHTML=q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('');
+  document.getElementById('quizOpts').innerHTML=q.opts.map((o,i)=>'<button class="quiz-opt" onclick="answerQuiz(' + i + ')">' + o + '</button>').join('');
 }
 function answerQuiz(i){
   if(quizAnswered)return;quizAnswered=true;
@@ -2098,13 +2055,8 @@ function showQuizResult(){
   if(total > 0) saveQuizResult(correct, total);
 
   const pct=Math.round((quizScore/quizData.length)*100);
-  document.getElementById('quizOverlay').querySelector('.quiz-inner').innerHTML=`
-    <div class="quiz-badge">🎉 QUIZ COMPLETE</div>
-    <div class="quiz-score"><div class="quiz-score-num">${quizScore}/${quizData.length}</div><div class="quiz-score-lbl">${pct>=70?'Shabash! Bahut achha! 🔥':pct>=40?'Theek hai, aur practice karo 💪':'Dobara notes dekho 📖'}</div></div>
-    <div style="display:flex;gap:.6rem;margin-top:1rem;">
-      <button class="quiz-skip" onclick="closeQuiz()">Close</button>
-      <button class="quiz-next" style="display:block" onclick="openFlashcards()">⚡ Flashcards</button>
-    </div>`;
+  var quizMsg = pct>=70?'Shabash! Bahut achha! 🔥':pct>=40?'Theek hai, aur practice karo 💪':'Dobara notes dekho 📖';
+  document.getElementById('quizOverlay').querySelector('.quiz-inner').innerHTML='<div class="quiz-badge">🎉 QUIZ COMPLETE</div><div class="quiz-score"><div class="quiz-score-num">'+quizScore+'/'+quizData.length+'</div><div class="quiz-score-lbl">'+quizMsg+'</div></div><div style="display:flex;gap:.6rem;margin-top:1rem;"><button class="quiz-skip" onclick="closeQuiz()">Close</button><button class="quiz-next" style="display:block" onclick="openFlashcards()">⚡ Flashcards</button></div>';
 }
 function closeQuiz(){document.getElementById('quizOverlay').classList.remove('show');}
 
@@ -2122,7 +2074,7 @@ function renderFlashCard(){
   const fc=flashData[flashIdx];
   document.getElementById('flashQ').textContent=fc.q;
   document.getElementById('flashA').textContent=fc.a;
-  document.getElementById('flashCounter').textContent=`${flashIdx+1} / ${flashData.length}`;
+  document.getElementById('flashCounter').textContent=(flashIdx+1) + ' / ' + flashData.length;
   document.getElementById('flashCard').classList.remove('flipped');
 }
 function flipCard(){document.getElementById('flashCard').classList.toggle('flipped');}
@@ -2138,21 +2090,17 @@ function openAnalytics(){
   const totalTime=hist.reduce((s,h)=>s+h.time,0);
   const subjects=['Physics','Chemistry','Mathematics','Organic Chemistry','Biology'];
   const streakDays=generateStreak();
-  document.getElementById('anaBody').innerHTML=`
-    <div class="stat-grid">
-      <div class="stat-card"><div class="stat-num">${totalWatched}</div><div class="stat-lbl">Lectures Watched</div></div>
-      <div class="stat-card"><div class="stat-num">${Math.round(totalTime/60)}m</div><div class="stat-lbl">Total Watch Time</div></div>
-      <div class="stat-card"><div class="stat-num">${hist.length}</div><div class="stat-lbl">Videos Started</div></div>
-      <div class="stat-card"><div class="stat-num">${streakDays.filter(Boolean).length}</div><div class="stat-lbl">Day Streak 🔥</div></div>
-    </div>
-    <div class="ana-section-label" style="margin-top:.5rem">Subject Progress</div>
-    ${subjects.map(s=>{const pct=Math.floor(Math.random()*80)+5;return`<div class="subj-row"><div class="subj-row-top"><span class="subj-name">${s}</span><span class="subj-pct">${pct}%</span></div><div class="subj-bar"><div class="subj-bar-fill" style="width:${pct}%"></div></div></div>`;}).join('')}
-    <div class="ana-section-label" style="margin-top:.8rem">Study Streak (Last 14 Days)</div>
-    <div class="streak-row">${streakDays.map((active,i)=>`<div class="streak-day ${active?(i===13?'today':'active'):''}">${['S','M','T','W','T','F','S'][new Date(Date.now()-((13-i)*86400000)).getDay()]}</div>`).join('')}</div>
-    <div style="display:flex;gap:.6rem;margin-top:1rem;">
-      <button class="quiz-skip" onclick="openQuiz();closeAnalytics();">🧠 Take Quiz</button>
-      <button class="quiz-next" style="display:block;flex:2" onclick="openFlashcards();closeAnalytics();">⚡ Flashcards</button>
-    </div>`;
+  var anaHtml = '<div class="stat-grid">';
+  anaHtml += '<div class="stat-card"><div class="stat-num">'+totalWatched+'</div><div class="stat-lbl">Lectures Watched</div></div>';
+  anaHtml += '<div class="stat-card"><div class="stat-num">'+Math.round(totalTime/60)+'m</div><div class="stat-lbl">Total Watch Time</div></div>';
+  anaHtml += '<div class="stat-card"><div class="stat-num">'+hist.length+'</div><div class="stat-lbl">Videos Started</div></div>';
+  anaHtml += '<div class="stat-card"><div class="stat-num">'+streakDays.filter(Boolean).length+'</div><div class="stat-lbl">Day Streak 🔥</div></div>';
+  anaHtml += '</div><div class="ana-section-label" style="margin-top:.5rem">Subject Progress</div>';
+  subjects.forEach(function(s){var pct=Math.floor(Math.random()*80)+5;anaHtml+='<div class="subj-row"><div class="subj-row-top"><span class="subj-name">'+s+'</span><span class="subj-pct">'+pct+'%</span></div><div class="subj-bar"><div class="subj-bar-fill" style="width:'+pct+'%"></div></div></div>';});
+  anaHtml += '<div class="ana-section-label" style="margin-top:.8rem">Study Streak (Last 14 Days)</div><div class="streak-row">';
+  streakDays.forEach(function(active,i){anaHtml+='<div class="streak-day '+(active?(i===13?'today':'active'):'')+'">'+ ['S','M','T','W','T','F','S'][new Date(Date.now()-((13-i)*86400000)).getDay()]+'</div>';});
+  anaHtml += '</div><div style="display:flex;gap:.6rem;margin-top:1rem;"><button class="quiz-skip" onclick="openQuiz();closeAnalytics();">🧠 Take Quiz</button><button class="quiz-next" style="display:block;flex:2" onclick="openFlashcards();closeAnalytics();">⚡ Flashcards</button></div>';
+  document.getElementById('anaBody').innerHTML=anaHtml;
   // Animate bars
   setTimeout(()=>document.querySelectorAll('.subj-bar-fill').forEach(b=>{const w=b.style.width;b.style.width='0';setTimeout(()=>b.style.width=w,50);}),100);
 }
@@ -2178,10 +2126,10 @@ function tickPomo(){
     pomoSecondsLeft=POMO_MODES[pomoMode].mins*60;
     document.getElementById('pomoStartBtn').textContent='▶ Start';
     document.getElementById('pomoDot').classList.remove('active');
-    showNotif('🍅',`${POMO_MODES[pomoMode===0?POMO_MODES.length-1:pomoMode-1].label} complete! Ab ${POMO_MODES[pomoMode].label} time.`);
+    showNotif('🍅',POMO_MODES[pomoMode===0?POMO_MODES.length-1:pomoMode-1].label + ' complete! Ab ' + POMO_MODES[pomoMode].label + ' time.');
   }
   updatePomoDisplay();
-  document.getElementById('pomoPill').querySelector('#pomoLabel').textContent=`🍅 ${fmt2(pomoSecondsLeft)}`;
+  document.getElementById('pomoPill').querySelector('#pomoLabel').textContent='🍅 ' + fmt2(pomoSecondsLeft);
 }
 function updatePomoDisplay(){
   const total=POMO_MODES[pomoMode].mins*60;
@@ -2193,7 +2141,7 @@ function updatePomoDisplay(){
   if(!pomoRunning)document.getElementById('pomoPill').querySelector('#pomoLabel').textContent='🍅 Pomodoro';
 }
 function resetPomo(){clearInterval(pomoInterval);pomoRunning=false;pomoSecondsLeft=POMO_MODES[pomoMode].mins*60;document.getElementById('pomoStartBtn').textContent='▶ Start';document.getElementById('pomoDot').classList.remove('active');updatePomoDisplay();}
-function renderPomoSessions(){const s=document.getElementById('pomoSessions');s.innerHTML=Array.from({length:4},(_,i)=>`<div class="pomo-sess-dot ${i<pomoSessionsDone%4?'done':''}"></div>`).join('');}
+function renderPomoSessions(){const s=document.getElementById('pomoSessions');s.innerHTML=Array.from({length:4},(_,i)=>'<div class="pomo-sess-dot ' + (i<pomoSessionsDone%4?'done':'') + '"></div>').join('');}
 function fmt2(s){const m=Math.floor(s/60),sec=s%60;return m+':'+(sec<10?'0':'')+sec;}
 
 /* ══ DARK/LIGHT AUTO SCHEDULE ══ */
@@ -2215,7 +2163,7 @@ function scheduleNextLectureNotif(){
   const now=Date.now();
   localStorage.setItem('vx_last_seen',now);
   if(now-lastSeen>4*60*60*1000){
-    setTimeout(()=>showNotif('📚',`Next lecture ready: "${allLectures[currentIdx+1]||'Next Chapter'}"`),8000);
+    setTimeout(()=>showNotif('📚','Next lecture ready: "' + (allLectures[currentIdx+1]||'Next Chapter') + '"'),8000);
   }
 }
 function showNotif(icon,text){
@@ -2229,8 +2177,8 @@ function dismissNotif(){document.getElementById('notifToast').classList.remove('
 /* ══ ATTACHMENTS ══ */
 const ATTACH_DATA={'Stereoisomerism':{notes:['IUPAC Rules (Notes)','IUPAC Of Hydrocarbon (Notes)','Naming Of Side Chain (Notes)','Naming Of Carboxylic Acid (Notes)','IUPAC Of SO3H (Notes)','Naming Of Acid Anhydride (Notes)','Naming Of Ester (Notes)','Naming Of Acid Amide & Acid Halide (Notes)','HW Discussion (Notes)'],dpps:['Document','Document','Document','Document']},'default':{notes:['Chapter Notes (PDF)','Short Notes','Formula Sheet','Important Reactions'],dpps:['DPP - 01','DPP - 02','DPP - 03']}};
 function getAD(){return ATTACH_DATA[currentChapter]||ATTACH_DATA['default'];}
-function renderInlineAttach(){const d=getAD();let h='';if(d.notes?.length){h+=`<div class="sec-label">📄 Lecture Notes</div>`;h+=d.notes.slice(0,3).map(n=>`<div class="attach-item"><span class="ai-icon">📄</span><span class="ai-name">${n}</span><button class="ai-view">👁 View</button></div>`).join('');if(d.notes.length>3)h+=`<div class="attach-item" onclick="openAttachPanel()" style="justify-content:center;color:var(--accent);font-size:.72rem;font-weight:800;">+${d.notes.length-3} more →</div>`;}document.getElementById('inlineAttach').innerHTML=h;}
-function renderPanelAttach(){const d=getAD();let h='';if(d.notes?.length){h+=`<div class="ap-sec-label">Lecture Notes</div>`;h+=d.notes.map(n=>`<div class="ap-item"><span class="ap-item-icon">📄</span><span class="ap-item-name">${n}</span><button class="ap-view">👁 View</button></div>`).join('');}if(d.dpps?.length){h+=`<div class="ap-sec-label">DPPs</div>`;h+=d.dpps.map((n,i)=>`<div class="ap-item"><span class="ap-item-icon">📝</span><span class="ap-item-name">${n}</span><button class="ap-view">👁 View</button></div>`).join('');}document.getElementById('apBody').innerHTML=h;}
+function renderInlineAttach(){const d=getAD();let h='';if(d.notes?.length){h+='<div class="sec-label">📄 Lecture Notes</div>';h+=d.notes.slice(0,3).map(n=>'<div class="attach-item"><span class="ai-icon">📄</span><span class="ai-name">' + n + '</span><button class="ai-view">👁 View</button></div>').join('');if(d.notes.length>3)h+='<div class="attach-item" onclick="openAttachPanel()" style="justify-content:center;color:var(--accent);font-size:.72rem;font-weight:800;">+' + (d.notes.length-3) + ' more →</div>';}document.getElementById('inlineAttach').innerHTML=h;}
+function renderPanelAttach(){const d=getAD();let h='';if(d.notes?.length){h+='<div class="ap-sec-label">Lecture Notes</div>';h+=d.notes.map(n=>'<div class="ap-item"><span class="ap-item-icon">📄</span><span class="ap-item-name">' + n + '</span><button class="ap-view">👁 View</button></div>').join('');}if(d.dpps?.length){h+='<div class="ap-sec-label">DPPs</div>';h+=d.dpps.map((n,i)=>'<div class="ap-item"><span class="ap-item-icon">📝</span><span class="ap-item-name">' + n + '</span><button class="ap-view">👁 View</button></div>').join('');}document.getElementById('apBody').innerHTML=h;}
 function openAttachPanel(){document.getElementById('apOverlay').classList.add('show');document.getElementById('apPanel').classList.add('open');document.getElementById('attachToggleBtn').classList.add('active');}
 function closeAttachPanel(){document.getElementById('apOverlay').classList.remove('show');document.getElementById('apPanel').classList.remove('open');document.getElementById('attachToggleBtn').classList.remove('active');}
 
@@ -2238,7 +2186,7 @@ function closeAttachPanel(){document.getElementById('apOverlay').classList.remov
 function prevLecture(){cancelAutoNext();if(currentIdx<=0)return;nav(currentIdx-1);}
 function nextLecture(){cancelAutoNext();if(currentIdx>=allLectures.length-1)return;nav(currentIdx+1);}
 function nav(idx){const u=new URL(window.location);u.searchParams.set('idx',idx);u.searchParams.set('title',allLectures[idx]||'Lecture');window.location.href=u.toString();}
-function goBack(){window.location.href=`vaultx-player.html?batch=${encodeURIComponent(currentBatch)}&subject=${encodeURIComponent(currentSubject)}&chapter=${encodeURIComponent(currentChapter)}`;}
+function goBack(){window.location.href='vaultx-player.html?batch=' + encodeURIComponent(currentBatch) + '&subject=' + encodeURIComponent(currentSubject) + '&chapter=' + encodeURIComponent(currentChapter);}
 
 /* ══ DOUBT ══ */
 let dOpen=false,isThink=false,hist=[];
@@ -2246,8 +2194,8 @@ function toggleDoubt(){dOpen=!dOpen;document.getElementById('dpanel').classList.
 function ag(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,80)+'px';}
 function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendDoubt();}}
 function gt(){return new Date().toLocaleTimeString('hi-IN',{hour:'2-digit',minute:'2-digit'});}
-function am(r,t){const m=document.getElementById('dpm');const d=document.createElement('div');d.className=`cm ${r}`;d.innerHTML=r==='bot'?`<div class="bl">AI Tutor</div><div class="mb">${t}</div><div class="mt">${gt()}</div>`:`<div class="mb">${t}</div><div class="mt">${gt()}</div>`;m.appendChild(d);m.scrollTop=m.scrollHeight;}
-async function sendDoubt(){const inp=document.getElementById('di');const q=inp.value.trim();if(!q||isThink)return;isThink=true;inp.value='';inp.style.height='auto';document.getElementById('ds').disabled=true;am('user',q);hist.push({role:'user',content:q});const t=document.getElementById('tyd');t.classList.add('show');document.getElementById('dpm').scrollTop=99999;try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:`You are a friendly AI tutor. Student is watching "${currentChapter}" from "${currentSubject}" (${currentBatch}). Answer in Hindi, English, or Hinglish. Under 150 words.`,messages:hist})});const dd=await r.json();const rep=dd.content?.[0]?.text||'Kuch problem aayi!';hist.push({role:'assistant',content:rep});t.classList.remove('show');am('bot',rep);}catch(e){t.classList.remove('show');am('bot','⚠ Net check karo!');hist.pop();}isThink=false;document.getElementById('ds').disabled=false;document.getElementById('di').focus();}
+function am(r,t){const m=document.getElementById('dpm');const d=document.createElement('div');d.className='cm ' + r;d.innerHTML=r==='bot'?'<div class="bl">AI Tutor</div><div class="mb">' + t + '</div><div class="mt">' + gt() + '</div>':'<div class="mb">' + t + '</div><div class="mt">' + gt() + '</div>';m.appendChild(d);m.scrollTop=m.scrollHeight;}
+async function sendDoubt(){const inp=document.getElementById('di');const q=inp.value.trim();if(!q||isThink)return;isThink=true;inp.value='';inp.style.height='auto';document.getElementById('ds').disabled=true;am('user',q);hist.push({role:'user',content:q});const t=document.getElementById('tyd');t.classList.add('show');document.getElementById('dpm').scrollTop=99999;try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are a friendly AI tutor. Student is watching "' + currentChapter + '" from "' + currentSubject + '" (' + currentBatch + '). Answer in Hindi, English, or Hinglish. Under 150 words.',messages:hist})});const dd=await r.json();const rep=dd.content?.[0]?.text||'Kuch problem aayi!';hist.push({role:'assistant',content:rep});t.classList.remove('show');am('bot',rep);}catch(e){t.classList.remove('show');am('bot','⚠ Net check karo!');hist.pop();}isThink=false;document.getElementById('ds').disabled=false;document.getElementById('di').focus();}
 
 init();
 </script>
