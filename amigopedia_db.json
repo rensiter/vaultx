@@ -65,7 +65,13 @@
               ]
             },
             "Iso": {
-              "lectures": []
+              "lectures": [
+                {
+                  "idx": 0,
+                  "title": "Iso 01",
+                  "msg_id": 87
+                }
+              ]
             }
           }
         }
@@ -77,7 +83,8 @@
     "ISOMERISM__0": 14,
     "STREOIDOMER__0": 26,
     "Kabir Singh__0": 59,
-    "Ghost__0": 75
+    "Ghost__0": 75,
+    "Iso__0": 87
   },
   "students": {
     "5041968198": {
