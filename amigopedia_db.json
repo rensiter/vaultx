@@ -22,7 +22,11 @@
       "subjects": {
         "ORGANIC": {
           "teacher": "SKM SIR",
-          "chapters": {}
+          "chapters": {
+            "STREOIDOMER": {
+              "lectures": []
+            }
+          }
         }
       }
     }
