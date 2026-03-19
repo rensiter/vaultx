@@ -1,7 +1,13 @@
 {
   "batches": {
     "AK CLASS 11TH": {
-      "subjects": {}
+      "subjects": {
+        "ORGANIC ( SKM SIR )": {
+          "teacher": "Coming Soon",
+          "chapters": {}
+        }
+      }
     }
-  }
+  },
+  "index_msgs": {}
 }
