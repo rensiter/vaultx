@@ -2322,5 +2322,25 @@ init();
   </div>
 </div>
 
+
+<!-- ══ SERVER INDICATOR ══ -->
+<div class="server-indicator" onclick="toggleSrvPanel()">
+  <div class="srv-dot checking" id="srvDot"></div>
+  <span id="srvLabel">Connecting...</span>
+</div>
+
+<!-- ══ SERVER PANEL ══ -->
+<div class="srv-panel" id="srvPanel">
+  <div class="srv-panel-head">
+    ⚡ Servers
+    <button class="srv-panel-close" onclick="toggleSrvPanel()">✕</button>
+  </div>
+  <div class="srv-list" id="srvList"></div>
+  <div style="padding:.5rem;">
+    <button class="srv-add-btn" onclick="promptAddServer()">+ Add Server</button>
+  </div>
+  <div class="srv-panel-footer" id="srvFooter">No active server</div>
+</div>
+
 </body>
 </html>
