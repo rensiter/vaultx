@@ -37,7 +37,12 @@
       }
     },
     "B4U": {
-      "subjects": {}
+      "subjects": {
+        "Hindi movie": {
+          "teacher": "Coming Soon",
+          "chapters": {}
+        }
+      }
     }
   },
   "index_msgs": {},
